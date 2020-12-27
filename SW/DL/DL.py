@@ -1,7 +1,7 @@
 import numpy as np
 from itertools import product
 from os import getcwd
-from random import randrange
+from random import randrange, shuffle
 from tensorflow.keras import activations, losses, metrics, optimizers
 from tensorflow.keras import Sequential
 from tensorflow.keras.layers import LSTM, Dense
@@ -18,6 +18,7 @@ class PressureData(DataSet):
         self.group = group
         self.bounds = bounds
         super(PressureData, self).__init__(list(group.keys()), bounds[1] - bounds[0], len(group.keys()))
+        self.idx_x = 0
 
     def _load_raw_data(self) -> Any:
         raw = {}
@@ -25,21 +26,22 @@ class PressureData(DataSet):
             sigs = []
             for val in self.group[key]:
                 sigs += get_signal(key + '_' + val['name'], 'pressure', val['path'], self.bounds)
+            shuffle(sigs)
             raw[key] = sigs
 
         return raw
 
-    def single_x(self, factor):
-        pass
+    def single_x(self, idx: int, factor):
+        return self._raw[factor][idx]
 
     def single_y(self, factor):
         return np.eye(len(self.factors))[self.factors.index(factor)]
 
     def reshape_x(self, x) -> np.ndarray:
-        pass
+        return np.array(x, dtype=np.float32).reshape((-1, self.input_size, 1))
 
     def reshape_y(self, y) -> np.ndarray:
-        pass
+        return np.array(y, dtype=np.float32)
 
 
 if __name__ == '__main__':
@@ -48,13 +50,16 @@ if __name__ == '__main__':
             dic('0919_2'),
             dic('0919_3'),
             dic('0919_4')
-        ],
-        'glass': [
-
         ]
+        #'glass': [
+        #
+        #]
     }
 
     data = PressureData(
         group=data_group,
         bounds=(-1200, 2600)
     )
+
+    raw_data = data._load_raw_data()
+    print(len(raw_data['copper'][99])) #297개 list, each list 3800

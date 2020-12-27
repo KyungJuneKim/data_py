@@ -3,21 +3,21 @@ import numpy as np
 from typing import List, Tuple
 
 from SW import signal
-from SW.signal import dic, get_signal
+from SW.signal import BOUNDS, dic, get_signal
 
 
 def single_signal(sig: List[float]) -> Tuple:
     length = len(sig)
     fs = 962
     t = np.arange(length) / fs
-    f = np.arange(int(length/2 + 1)) * fs / length
+    f = np.arange(int(length / 2 + 1)) * fs / length
 
-    fft_signal = np.abs((np.fft.fft(sig) / fs)[:int(length/2 + 1)])
+    fft_signal = np.abs((np.fft.fft(sig) / fs)[:int(length / 2 + 1)])
 
     return t, sig, f, fft_signal
 
 
-def plot(group: List[List[dict]], category: List[str]):
+def plot(group: List[List[dict]], category: List[str], bounds: Tuple[int, int] = BOUNDS):
     for j, data_list in enumerate(group):
         if not data_list:
             print('Error')
@@ -31,7 +31,7 @@ def plot(group: List[List[dict]], category: List[str]):
         for data in data_list:
             name = data['name']
             for idx in range(len(category)):
-                signal_list = get_signal(name, category[idx], data['path'])
+                signal_list = get_signal(name, category[idx], data['path'], bounds)
                 for i in data['num']:
                     fft = single_signal(signal_list[i])
                     label = name + ': ' + str(i + 1)
@@ -52,16 +52,18 @@ def plot(group: List[List[dict]], category: List[str]):
 if __name__ == '__main__':
     data_group = [
         [
-            dic(signal.name, list(range(10, 15)) + list(range(90, 95)))
-            # dic('glass_thick5_0912_2', list(range(5, 10)))
+            dic('zinc(1)_1107_1', list(range(50, 53))),
+            dic('zinc(1)_1107_1', list(range(170, 173))),
+            dic('zinc(1)_1107_1', list(range(280, 282))),
+            # dic('copper(1)_1031_5', list(range(10, 15))),
+            # dic('zinc_1031_1', list(range(80, 82)))
         ],
-        # [dic('glass_0919_4', list(range(10, 15))+list(range(90, 95)))],
-        # [dic('copper_0919_1', list(range(10, 15))+list(range(90, 95)))]
+        # [dic('test_1031_3', list(range(10, 19)))],
+        # [dic(signal.name, list(range(10, 15))+list(range(90, 95)))]
     ]
-
     sensor_list = [
         'pressure',
         'heat'
     ]
 
-    plot(data_group, sensor_list)
+    plot(data_group, sensor_list, (-200, 1300))

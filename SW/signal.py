@@ -1,20 +1,21 @@
 import csv
 from os import getcwd
-from typing import List, Tuple
+from typing import Final, List, Tuple
 
 
 sample_list = ['none', 'aluminium', 'copper', 'fabric14', 'fabric30', 'glass', 'polymer', 'zinc']
-name = 'copper_0926_1'
+NAME: Final[str] = '1107_copper(1)_1'
 
-DEFAULT_PATH = getcwd() + '/data/'
-print(DEFAULT_PATH)
-
-
-def dic(sample_name: str, number: List[int] = None, path: str = DEFAULT_PATH) -> dict:
-    return {'name': sample_name, 'num': number, 'path': path}
+PATH: Final[str] = getcwd() + '/data/'
+BOUNDS: Final[Tuple[int, int]] = (-200, 1300)
+print(PATH)
 
 
-def get_signal(sample: str, category: str, path: str = DEFAULT_PATH, bounds: Tuple[int, int] = (-1200, 2600)) \
+def dic(sample_name: str, numbers: List[int] = None, path: str = PATH) -> dict:
+    return {'name': sample_name, 'num': numbers, 'path': path}
+
+
+def get_signal(sample: str, category: str, path: str = PATH, bounds: Tuple[int, int] = BOUNDS) \
         -> List[List[float]]:
     signal = []
     new_signal = []

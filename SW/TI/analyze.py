@@ -4,11 +4,12 @@ from scipy import stats
 from typing import List, Tuple
 
 from SW import signal
-from SW.signal import DEFAULT_PATH, get_signal
+from SW.signal import BOUNDS, PATH, get_signal
 
 
-def get_pressure_info(sample: str, path: str = DEFAULT_PATH) -> Tuple[List[int], List[float], List[float]]:
-    signals = get_signal(sample, 'pressure', path)
+def get_pressure_info(sample: str, path: str = PATH, bounds: Tuple[int, int] = BOUNDS) \
+        -> Tuple[List[int], List[float], List[float]]:
+    signals = get_signal(sample, 'pressure', path, bounds)
     name = ['idx400', 'idx1400', 'idx2000', 'idx200']
     length = []
     slope = []
@@ -38,8 +39,9 @@ def get_pressure_info(sample: str, path: str = DEFAULT_PATH) -> Tuple[List[int],
 
 
 if __name__ == '__main__':
-    len1, slope1, amp1 = get_pressure_info(signal.name)
-    len2, slope2, amp2 = get_pressure_info('copper_0919_2')
+    boundary = (-200, 1300)
+    len1, slope1, amp1 = get_pressure_info(signal.name, bounds=boundary)
+    len2, slope2, amp2 = get_pressure_info('copper_0919_2', bounds=boundary)
 
     t_len, p_len = stats.ttest_ind(len1, len2, equal_var=False)
     t_slope, p_slope = stats.ttest_ind(slope1, slope2, equal_var=False)
